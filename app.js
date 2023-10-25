@@ -31,6 +31,7 @@ const {
 const CallSession = require('./lib/call-session');
 
 srf.use('invite', [initLocals, identifyCallDirection]);
+srf.use('message', [initLocals, identifyCallDirection]);
 srf.invite((req, res) => {
   const session = new CallSession(req, res);
   session.connect();
