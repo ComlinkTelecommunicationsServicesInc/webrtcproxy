@@ -1,0 +1,23 @@
+{
+  "drachtio": {
+    "host": "127.0.0.1",
+    "port": 9024,
+    "secret": "cymru"
+  }, 
+  "rtpengine": {
+    "hostport": ["127.0.0.1:22222"],
+    "opts": {
+      "protocol": "udp",
+      "timeout": 2000
+    }
+  },
+  "credentials": [
+    {
+      "trunk": "your.voipprovider.com",
+      "auth": {
+        "username": "<yourusername>",
+        "password": "<yourpassword>"  
+      }
+    }
+  ]
+}
