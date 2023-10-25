@@ -1,13 +1,14 @@
-const assert = require('assert');
 const Srf = require('drachtio-srf') ;
 const srf = new Srf() ;
 const logger = require('pino')();
 const Register = require('./lib/register');
 const Registrar = require('./lib/registrar');
 const Subscriber = require('./lib/subscriber');
+const Messager = require('./lib/messager');
 const registrar = new Registrar(logger) ;
 const register = new Register(logger) ;
 const subscriber = new Subscriber(logger);
+const messager = new Messager(logger);
 const config = require('config') ;
 
 srf.locals = {
@@ -37,3 +38,4 @@ srf.invite((req, res) => {
 
 register.start(srf, registrar);
 subscriber.start(srf, registrar);
+messager.start(srf, registrar);
