@@ -5,10 +5,12 @@ const Register = require('./lib/register');
 const Registrar = require('./lib/registrar');
 const Subscriber = require('./lib/subscriber');
 const Messager = require('./lib/messager');
+const Optionser = require('./lib/options');
 const registrar = new Registrar(logger) ;
 const register = new Register(logger) ;
 const subscriber = new Subscriber(logger);
 const messager = new Messager(logger);
+const optionser = new Optionser(logger);
 const config = require('config') ;
 
 srf.locals = {
@@ -32,6 +34,7 @@ const CallSession = require('./lib/call-session');
 
 srf.use('invite', [initLocals, identifyCallDirection]);
 srf.use('message', [initLocals, identifyCallDirection]);
+srf.use('options', [initLocals, identifyCallDirection]);
 srf.invite((req, res) => {
   const session = new CallSession(req, res);
   session.connect();
@@ -40,3 +43,4 @@ srf.invite((req, res) => {
 register.start(srf, registrar);
 subscriber.start(srf, registrar);
 messager.start(srf, registrar);
+optionser.start(srf);
