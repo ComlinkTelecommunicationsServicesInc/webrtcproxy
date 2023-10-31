@@ -1,3 +1,4 @@
+const assert = require('assert');
 const Srf = require('drachtio-srf') ;
 const srf = new Srf() ;
 const logger = require('pino')();
@@ -12,10 +13,20 @@ const subscriber = new Subscriber(logger);
 const messager = new Messager(logger);
 const optionser = new Optionser(logger);
 const config = require('config') ;
+const { hostport, opts = {} } = config.get('rtpengine');
+assert.ok(Array.isArray(hostport) && hostport.length, 'config: rtpengine.hostport must be array');
+const { getRtpEngine, setRtpEngines } = require('@jambonz/rtpengine-utils')([], logger, opts);
+
+/**
+ * Set the array of rtpengines, each entry a host:port that rtpengine is listening on for ng
+ * NB: this could be called at any time with a new array of rtpengines, as they go down / come up
+ */
+setRtpEngines(hostport);
 
 srf.locals = {
   ...srf.locals,
   registrar,
+  getRtpEngine
 };
 
 srf.connect(config.get('drachtio'))
