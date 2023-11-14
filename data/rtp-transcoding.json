@@ -1,5 +1,5 @@
 {
-  "transport protocol": "RTP/AVP",
+  "transport protocol": "RTP/AVPF",
   "DTLS": "off",
   "ICE": "remove",
   "rtcp-mux": [
