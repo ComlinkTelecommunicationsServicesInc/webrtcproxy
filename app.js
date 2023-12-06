@@ -6,12 +6,14 @@ const Register = require('./lib/register');
 const Registrar = require('./lib/registrar');
 const Subscriber = require('./lib/subscriber');
 const Messager = require('./lib/messager');
+const Publish = require('./lib/publish');
 const Optionser = require('./lib/options');
 const registrar = new Registrar(logger) ;
 const register = new Register(logger) ;
 const subscriber = new Subscriber(logger);
 const messager = new Messager(logger);
 const optionser = new Optionser(logger);
+const publish = new Publish(logger);
 const config = require('config') ;
 const { hostport, opts = {} } = config.get('rtpengine');
 assert.ok(Array.isArray(hostport) && hostport.length, 'config: rtpengine.hostport must be array');
@@ -45,6 +47,7 @@ const CallSession = require('./lib/call-session');
 
 srf.use('invite', [initLocals, identifyCallDirection]);
 srf.use('message', [initLocals, identifyCallDirection]);
+srf.use('publish', [initLocals, identifyCallDirection]);
 srf.use('options', [initLocals, identifyCallDirection]);
 srf.invite((req, res) => {
   const session = new CallSession(req, res);
@@ -54,4 +57,5 @@ srf.invite((req, res) => {
 register.start(srf, registrar);
 subscriber.start(srf, registrar);
 messager.start(srf, registrar);
+publish.start(srf, registrar);
 optionser.start(srf);

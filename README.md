@@ -68,3 +68,48 @@ Calls can be therefore be made to the PSTN (i.e. regular phone numbers) using a 
 The application also supports *inbound* calls to registered webrtc clients.  These would be RTP to SRTP calls (i.e. the reverse of outbound calls) and require the use of a third-party registrar or VoIP carrier that you can register sip credentials with.
 
 To receive inbound calls, a webrtc client should send REGISTER requests.  The application will forward the REGISTER requests on to the hosted service (specified in the Request-URI of the received REGISTER message) over udp.  Any subsequent INVITEs received from the VoIP carrier for that registered user will be sent to the webrtc client over wss.
+# hack drachtio-srf/srf.js
+ /* now finalize the UAS */
+      let uas;
+      try {
+        uas = await this.createUAS(req, res, {
+          headers: copyUACHeadersToUAS(finalResponse),
+          localSdp: generateSdpA.bind(null, finalResponse),
+          dialogStateEmitter: opts.dialogStateEmitter
+        });
+
+        if (is3pcc) {
+          if (req.method === 'INVITE') {
+            debug('createB2BUA: successfully created UAS..but this is 3pcc, so a bit more work to do');
+            uas.once('ack', async(ackRequest) => {
+              debug(`createB2BUA: got ACK from UAS, pass on sdp: ${ackRequest.body}`);
+              const sdp = await (typeof opts.localSdpB === 'function' ?
+                opts.localSdpB(ackRequest.body) : Promise.resolve(ackRequest.body));
+              uac = await ackFunction(sdp);
+              uac.other = uas;
+              uas.other = uac;
+              debug('createB2BUA: successfully created bot dialogs in 3pcc!');
+              return callback(null, {uac, uas});  // successfully connected!  resolve promise with both dialogs
+            });
+            return;
+          } else {
+            uac.queueRequests = false;
+            uac.other = uas;
+            uas.other = uac;
+            return callback(null, {uac, uas});
+          }
+        }
+
+        debug('createB2BUA: successfully created UAS..done!');
+        uas.once('ack', () => {
+          debug('createB2BUA: got ACK from UAS, process any queued UAC requests');
+          uac.queueRequests = false;
+        });
+        uac.other = uas;
+        uas.other = uac;
+        return callback(null, {uac, uas});  // successfully connected!  resolve promise with both dialogs
+      } catch (err) {
+        debug({err}, 'createB2BUA: failed creating UAS..done!');
+        uac && uac.destroy() ;       // failed A leg after success on B: tear down B
+        return callback(err) ;
+      }
