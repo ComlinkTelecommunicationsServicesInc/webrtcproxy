@@ -1,12 +1,17 @@
 {
   "transport-protocol": "UDP/TLS/RTP/SAVPF",
   "ICE": "force",
-  "rtcp-mux": [
-    "require"
-  ],
+  "DTLS": "passive",
+  "rtcp-mux": ["require"],
   "flags": [
     "SDES-no",
     "generate mid",
-    "strip-extmap"
+    "strip-extmap",
+    "codec-strip-all",
+    "codec-offer-PCMU",
+    "codec-offer-PCMA",
+    "codec-offer-G722",
+    "codec-offer-telephone-event",
+    "codec-except-VP9"
   ]
 }

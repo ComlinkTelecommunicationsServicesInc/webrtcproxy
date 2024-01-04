@@ -2,10 +2,13 @@
   "transport protocol": "RTP/AVPF",
   "DTLS": "off",
   "ICE": "remove",
-  "rtcp-mux": [
-    "demux"
-  ],
-  "flags": [
-    "SDES-no"
+  "rtcp-mux": ["demux"], 
+  "flags":[
+    "SDES-no",
+    "codec-strip-all",
+    "codec-except-PCMU",
+    "codec-except-PCMA",
+    "codec-except-G722",
+    "codec-offer-telephone-event"
   ]
 }
